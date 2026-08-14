@@ -36,8 +36,8 @@ auto PipelineContext::exec(PipelineResult* result) -> void
     auto overlapped = this->overlap_strategy_(pre_processed);
     auto win_applied = this->window_strategy_(overlapped);
     auto fft_result = this->fft_strategy_(win_applied);
-    auto infered = this->infer_strategy_(fft_result);
-    auto post_processed = this->post_process_strategy_(infered);
+    auto infer_output = this->infer_strategy_(fft_result);
+    auto post_processed = this->post_process_strategy_(infer_output.frame);
     auto synthesized = this->overlap_add_strategy_(post_processed);
     this->audio_output_strategy_(synthesized);
 
@@ -47,7 +47,8 @@ auto PipelineContext::exec(PipelineResult* result) -> void
         result->overlapped_frame = overlapped;
         result->windowed_frame = win_applied;
         result->fft_frame = fft_result;
-        result->inferred_frame = infered;
+        result->inferred_frame = infer_output.frame;
+        result->infer_result = infer_output.result;
         result->post_processed_frame = post_processed;
         result->output_hop = synthesized;
     }
