@@ -2,7 +2,7 @@
 /// @file DeviceOutput.cpp
 ///
 
-#include "qt/DeviceOutput.hpp"
+#include "desktop_app/DeviceOutput.hpp"
 
 #include <algorithm>
 #include <bit>
@@ -16,7 +16,7 @@
 #include <QMediaDevices>
 
 #include "common/AudioConfig.hpp"
-#include "qt/AudioOutputBuffer.hpp"
+#include "desktop_app/AudioOutputBuffer.hpp"
 
 AudioPullDevice::AudioPullDevice(AudioOutputBuffer* buffer)
     : buffer_(buffer)

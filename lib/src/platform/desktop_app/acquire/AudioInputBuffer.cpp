@@ -2,7 +2,7 @@
 /// @file AudioInputBuffer.cpp
 ///
 
-#include "qt/AudioInputBuffer.hpp"
+#include "desktop_app/AudioInputBuffer.hpp"
 
 #include <utility>
 

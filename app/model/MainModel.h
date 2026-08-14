@@ -19,9 +19,9 @@
 #include "common/Strategies/RingBufferAcquire.hpp"
 #include "common/Strategies/RingBufferOutput.hpp"
 #include "common/Strategies/SineGenerator.hpp"
-#include "qt/AudioInputBuffer.hpp"
-#include "qt/AudioOutputBuffer.hpp"
-#include "qt/Strategies/FilePlayer.hpp"
+#include "desktop_app/AudioInputBuffer.hpp"
+#include "desktop_app/AudioOutputBuffer.hpp"
+#include "desktop_app/Strategies/FilePlayer.hpp"
 
 struct PipelineResult;
 class DeviceInput;

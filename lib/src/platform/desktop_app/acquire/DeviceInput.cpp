@@ -2,7 +2,7 @@
 /// @file DeviceInput.cpp
 ///
 
-#include "qt/DeviceInput.hpp"
+#include "desktop_app/DeviceInput.hpp"
 
 #include <bit>
 #include <cstddef>
