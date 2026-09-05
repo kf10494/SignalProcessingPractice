@@ -11,10 +11,10 @@
 ///
 /// アプリケーションのサンプルレート.
 ///
-inline constexpr std::uint32_t kAppSampleRate = 44100U;
+inline constexpr std::uint32_t kAppSampleRate = 48000U;
 
 ///
-/// 1 ホップ分の周期 (512 / 44100 Hz ≒ 11.61 ms).
+/// 1 ホップ分の周期 (512 / 48000 Hz ≒ 10.67 ms).
 ///
 inline constexpr auto kHopPeriod = std::chrono::nanoseconds{
         std::chrono::nanoseconds{std::chrono::seconds{1}}.count() *

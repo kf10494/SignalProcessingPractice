@@ -100,7 +100,8 @@ auto DeviceInput::Start(int device_index) -> bool
     if (!device.isFormatSupported(format)) {
         format.setSampleFormat(QAudioFormat::Int16);
         if (!device.isFormatSupported(format)) {
-            std::cerr << "DeviceInput: 44100 Hz mono capture is not supported by device '"
+            std::cerr << "DeviceInput: " << kAppSampleRate
+                      << " Hz mono capture is not supported by device '"
                       << device.description().toStdString() << "'\n";
             return false;
         }

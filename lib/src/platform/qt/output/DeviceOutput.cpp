@@ -113,7 +113,8 @@ auto DeviceOutput::Start(int device_index) -> bool
     if (!device.isFormatSupported(format)) {
         format.setSampleFormat(QAudioFormat::Int16);
         if (!device.isFormatSupported(format)) {
-            std::cerr << "DeviceOutput: 44100 Hz mono playback is not supported by device '"
+            std::cerr << "DeviceOutput: " << kAppSampleRate
+                      << " Hz mono playback is not supported by device '"
                       << device.description().toStdString() << "'\n";
             return false;
         }

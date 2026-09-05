@@ -23,7 +23,7 @@ public:
     ///
     /// 既定のサンプルレート.
     ///
-    static constexpr std::uint32_t kDefaultSampleRate = 44100U;
+    static constexpr std::uint32_t kDefaultSampleRate = 48000U;
 
     ///
     /// @name ctor, dtor.
