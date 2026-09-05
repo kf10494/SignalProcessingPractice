@@ -6,7 +6,7 @@
 
 #include <span>
 
-#include "qt/AudioOutputBuffer.hpp"
+#include "desktop_app/AudioOutputBuffer.hpp"
 
 RingBufferOutput::RingBufferOutput(AudioOutputBuffer* buffer)
     : buffer_(buffer)

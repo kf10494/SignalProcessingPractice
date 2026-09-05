@@ -11,8 +11,8 @@
 #include "common/AudioConfig.hpp"
 #include "common/FrameSyncProcessConfig.hpp"
 #include "common/PipelineResult.hpp"
-#include "qt/DeviceInput.hpp"
-#include "qt/DeviceOutput.hpp"
+#include "desktop_app/DeviceInput.hpp"
+#include "desktop_app/DeviceOutput.hpp"
 
 MainModel::MainModel()
     : device_input_(std::make_unique<DeviceInput>(&ring_buffer_acquire_)),

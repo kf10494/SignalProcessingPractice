@@ -36,12 +36,12 @@ struct BypassFft {
 };
 
 struct BypassInfer {
-    static auto Exec(const FrameSyncProcess::AudioFrame& frame) -> FrameSyncProcess::AudioFrame;
+    static auto Exec(const FrameSyncProcess::AudioFrame& frame) -> FrameSyncProcess::InferOutput;
     static auto Reset() -> void;
 };
 
 struct NullInfer {
-    static auto Exec(const FrameSyncProcess::AudioFrame& frame) -> FrameSyncProcess::AudioFrame;
+    static auto Exec(const FrameSyncProcess::AudioFrame& frame) -> FrameSyncProcess::InferOutput;
     static auto Reset() -> void;
 };
 

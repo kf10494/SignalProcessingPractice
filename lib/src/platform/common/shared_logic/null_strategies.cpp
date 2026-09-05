@@ -55,18 +55,19 @@ auto BypassFft::Reset() -> void
 {
 }
 
-auto BypassInfer::Exec(const FrameSyncProcess::AudioFrame& frame) -> FrameSyncProcess::AudioFrame
+auto BypassInfer::Exec(const FrameSyncProcess::AudioFrame& frame) -> FrameSyncProcess::InferOutput
 {
-    return frame;
+    return FrameSyncProcess::InferOutput{frame, InferResult{NoInferResult{}}};
 }
 auto BypassInfer::Reset() -> void
 {
 }
 
 auto NullInfer::Exec([[maybe_unused]] const FrameSyncProcess::AudioFrame& frame)
-        -> FrameSyncProcess::AudioFrame
+        -> FrameSyncProcess::InferOutput
 {
-    return FrameSyncProcess::AudioFrame{};
+    return FrameSyncProcess::InferOutput{FrameSyncProcess::AudioFrame{},
+                                         InferResult{NoInferResult{}}};
 }
 auto NullInfer::Reset() -> void
 {

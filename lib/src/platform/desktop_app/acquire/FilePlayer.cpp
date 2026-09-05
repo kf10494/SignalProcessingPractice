@@ -2,7 +2,7 @@
 /// @file FilePlayer.cpp
 ///
 
-#include "qt/Strategies/FilePlayer.hpp"
+#include "desktop_app/Strategies/FilePlayer.hpp"
 
 #include <array>
 #include <bit>

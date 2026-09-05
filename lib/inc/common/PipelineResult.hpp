@@ -4,6 +4,7 @@
 #pragma once
 
 #include "common/FrameSyncProcess.hpp"
+#include "common/InferResult.hpp"
 
 ///
 /// @brief 1 フレーム分の信号処理結果.
@@ -17,6 +18,7 @@ struct PipelineResult {
     FrameSyncProcess::AudioFrame windowed_frame;
     FrameSyncProcess::AudioFrame fft_frame;
     FrameSyncProcess::AudioFrame inferred_frame;
+    InferResult infer_result{NoInferResult{}};
     FrameSyncProcess::AudioFrame post_processed_frame;
     FrameSyncProcess::AudioHop output_hop;
 };

@@ -8,6 +8,7 @@
 #include <etl/delegate.h>
 
 #include "common/AudioFrame.hpp"
+#include "common/InferResult.hpp"
 #include "common/StrategySlot.hpp"
 
 ///
@@ -129,10 +130,15 @@ public:
     ///
     /// 推論.
     ///
-    /// @note Infer Strategy では, Observer から推論結果を受け取る設計とする.
-    ///       返り値は, 何らかの時間軸または周波数軸の推論結果を返すモデルであれば有効なフレームを返し, そうでなければ空フレームを返す.
+    /// @note Infer Strategy の出力は, 音声フレームと型付き推論結果 (InferResult) の組とする.
+    ///       frame は, 何らかの時間軸または周波数軸の推論結果を返すモデルであれば有効なフレームを, そうでなければ空フレームを返す.
+    ///       result は, キーワード識別・声質変換など推論ドメインごとの結果を InferResult に格納したものを返す.
     ///
-    using InferStrategy = StrategySlot<AudioFrame(const AudioFrame &)>;
+    struct InferOutput {
+        AudioFrame frame;
+        InferResult result;
+    };
+    using InferStrategy = StrategySlot<InferOutput(const AudioFrame &)>;
 
     ///
     /// オーディオ後処理.

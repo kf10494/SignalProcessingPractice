@@ -42,13 +42,13 @@ file(GLOB SRC_FILES
 #
 if(BUILD_APP)
     file(GLOB QT_SRC_FILES
-        ${CMAKE_CURRENT_LIST_DIR}/src/platform/qt/acquire/*.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/platform/qt/acquire/*.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/platform/qt/output/*.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/platform/qt/output/*.hpp
-        # Q_OBJECT を含む公開ヘッダ (inc/qt/) は, AUTOMOC が確実に検出できるよう
+        ${CMAKE_CURRENT_LIST_DIR}/src/platform/desktop_app/acquire/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/platform/desktop_app/acquire/*.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/platform/desktop_app/output/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/platform/desktop_app/output/*.hpp
+        # Q_OBJECT を含む公開ヘッダ (inc/desktop_app/) は, AUTOMOC が確実に検出できるよう
         # ターゲットの SOURCES として明示的に含める.
-        ${CMAKE_CURRENT_LIST_DIR}/inc/qt/*.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/inc/desktop_app/*.hpp
         )
     list(APPEND SRC_FILES ${QT_SRC_FILES})
 endif()
