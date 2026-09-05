@@ -2,37 +2,52 @@
 /// @file AudioFrame.hpp
 ///
 #pragma once
+
 #include <array>
+#include <cstddef>
 #include <cstdint>
 
-// NumSamples: テンプレートによる可変なサンプル数
-// SampleType: オーディオデータの型（デフォルトは float）
+///
+/// @brief 音声サンプルを保持する値型コンテナ.
+///
+/// サンプル数を非型テンプレート引数で固定し, 実体は std::array としてスタック上に確保する.
+/// メンバが std::array と組み込み型のみのため, 特殊メンバ関数はすべてコンパイラ生成の
+/// デフォルトで機能する (Rule of Zero).
+///
+/// @tparam NumSamples 1 フレーム当たりのサンプル数.
+/// @tparam SampleType サンプルの型 (既定は float).
+///
 template <std::size_t NumSamples, typename SampleType = float>
 class AudioFrameTemplate {
 public:
-    // コンストラクタ
-    static constexpr uint32_t kDefaultSampleRate = 44100U;
+    ///
+    /// 既定のサンプルレート.
+    ///
+    static constexpr std::uint32_t kDefaultSampleRate = 44100U;
 
-    constexpr explicit AudioFrameTemplate(uint32_t sample_rate = kDefaultSampleRate) noexcept
+    ///
+    /// @name ctor, dtor.
+    /// @{
+    constexpr explicit AudioFrameTemplate(std::uint32_t sample_rate = kDefaultSampleRate) noexcept
         : sample_rate_{sample_rate}
     {
     }
 
-    // 【値セマンティクスの要】
-    // メンバが std::array と組み込み型のみなので、
-    // 特殊メンバ関数はすべてコンパイラ生成のデフォルトで完璧に機能します（Rule of Zero）。
     AudioFrameTemplate(const AudioFrameTemplate&) = default;
     auto operator=(const AudioFrameTemplate&) -> AudioFrameTemplate& = default;
     AudioFrameTemplate(AudioFrameTemplate&&) = default;
     auto operator=(AudioFrameTemplate&&) -> AudioFrameTemplate& = default;
     ~AudioFrameTemplate() = default;
+    /// @}
 
-    // プロパティへのアクセス
-    [[nodiscard]] constexpr auto sample_rate() const noexcept -> uint32_t
+    ///
+    /// @name プロパティ.
+    /// @{
+    [[nodiscard]] constexpr auto sample_rate() const noexcept -> std::uint32_t
     {
         return sample_rate_;
     }
-    constexpr auto set_sample_rate(uint32_t rate) noexcept -> void
+    constexpr auto set_sample_rate(std::uint32_t rate) noexcept -> void
     {
         sample_rate_ = rate;
     }
@@ -40,8 +55,11 @@ public:
     {
         return NumSamples;
     }
+    /// @}
 
-    // インデクサで特定のサンプルへアクセス
+    ///
+    /// @name 要素アクセス.
+    /// @{
     constexpr auto operator[](std::size_t index) -> SampleType&
     {
         return data_.at(index);
@@ -50,8 +68,6 @@ public:
     {
         return data_.at(index);
     }
-
-    // データへのアクセス
     [[nodiscard]] constexpr auto data() noexcept -> SampleType*
     {
         return data_.data();
@@ -60,8 +76,11 @@ public:
     {
         return data_.data();
     }
+    /// @}
 
-    // イテレータのサポート（標準アルゴリズムとの連携用）
+    ///
+    /// @name イテレータ (標準アルゴリズムとの連携用).
+    /// @{
     [[nodiscard]] constexpr auto begin() noexcept
     {
         return data_.begin();
@@ -78,9 +97,13 @@ public:
     {
         return data_.end();
     }
+    /// @}
 
-    // 【値セマンティクスの要】等価演算子
-    // 状態（サンプリング周波数と全オーディオデータ）が完全に一致するかで評価します。
+    ///
+    /// @name 比較演算子.
+    ///
+    /// サンプルレートと全サンプルが一致するかで等価性を判定する.
+    /// @{
     friend constexpr auto operator==(const AudioFrameTemplate& lhs,
                                      const AudioFrameTemplate& rhs) noexcept -> bool
     {
@@ -92,8 +115,9 @@ public:
     {
         return !(lhs == rhs);
     }
+    /// @}
 
 private:
-    uint32_t sample_rate_{kDefaultSampleRate};
-    std::array<SampleType, NumSamples> data_{};  // 生ポインタや vector ではなく array を使用
+    std::uint32_t sample_rate_{kDefaultSampleRate};
+    std::array<SampleType, NumSamples> data_{};
 };
