@@ -8,16 +8,49 @@
 #include <mutex>
 #include <utility>
 
+#ifdef SPP_WITH_ONNXRUNTIME
+#include <string>
+
+#include <QCoreApplication>
+#include <QFileInfo>
+#include <QString>
+#endif
+
 #include "common/AudioConfig.hpp"
 #include "common/FrameSyncProcessConfig.hpp"
 #include "common/PipelineResult.hpp"
 #include "desktop_app/DeviceInput.hpp"
 #include "desktop_app/DeviceOutput.hpp"
 
+#ifdef SPP_WITH_ONNXRUNTIME
+namespace {
+
+///
+/// @brief keyword spotting モデルのパスを解決する.
+///
+/// パッケージ (AppImage / Windows zip) では実行ファイルの隣に配置されるためそれを優先し,
+/// 見つからなければビルド時に配置したパス (dev / test 用) をフォールバックとする.
+///
+auto ResolveKeywordSpottingModelPath() -> std::string
+{
+    const QString beside = QCoreApplication::applicationDirPath() + QStringLiteral("/") +
+                           QStringLiteral(KEYWORD_SPOTTING_MODEL_FILENAME);
+    if (QFileInfo::exists(beside)) {
+        return beside.toStdString();
+    }
+    return KEYWORD_SPOTTING_MODEL_PATH;
+}
+
+}  // namespace
+#endif
+
 MainModel::MainModel()
     : device_input_(std::make_unique<DeviceInput>(&ring_buffer_acquire_)),
       sine_generator_({.frequency = SineGenerator::kDefaultFrequency,
                        .amplitude = SineGenerator::kDefaultAmplitude}),
+#ifdef SPP_WITH_ONNXRUNTIME
+      keyword_infer_(KeywordSpottingInfer::Params{.model_path = ResolveKeywordSpottingModelPath()}),
+#endif
       device_output_(std::make_unique<DeviceOutput>(&output_buffer_))
 {
     process_.SetConfig(FrameSyncProcess::AcquireTag{}, get_default_null_input_strategy());

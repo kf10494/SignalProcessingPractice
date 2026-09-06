@@ -158,8 +158,9 @@ private:
     ///
     /// keyword spotting 推論 Strategy (Infer 段で "KeywordSpotting" 選択時に bind).
     ///
-    KeywordSpottingInfer keyword_infer_{
-            KeywordSpottingInfer::Params{.model_path = KEYWORD_SPOTTING_MODEL_PATH}};
+    /// モデルパスは ctor で解決する (実行ファイル相対 → ビルド時パスの順).
+    ///
+    KeywordSpottingInfer keyword_infer_;
 #endif
 
     ///

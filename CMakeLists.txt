@@ -15,10 +15,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #
-# ONNX Runtime (WITH_ONNXRUNTIME=ON のとき). app / lib いずれからも参照するため
-# サブディレクトリより先に取得する.
+# ONNX Runtime と keyword spotting モデル (WITH_ONNXRUNTIME=ON のとき).
+# app / lib いずれからも参照するためサブディレクトリより先に処理する.
 #
 include(${CMAKE_SOURCE_DIR}/cmake/onnxruntime.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/keyword_spotting_model.cmake)
 
 #
 # Add subdirectories

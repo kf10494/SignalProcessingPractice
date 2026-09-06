@@ -86,7 +86,8 @@ set_target_properties(CMSISDSP PROPERTIES
     INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${CMSIS_DSP_INCLUDES}")
 
 #
-# ONNX 依存の infer strategy とモデルファイルをビルド対象へ追加する.
+# ONNX 依存の infer strategy をビルド対象へ追加する.
+# (モデルファイルの配置は cmake/keyword_spotting_model.cmake で実施済み.)
 #
 if(WITH_ONNXRUNTIME)
     file(GLOB INFER_SRC_FILES
@@ -94,15 +95,6 @@ if(WITH_ONNXRUNTIME)
         ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/infer/*.hpp
         )
     list(APPEND SRC_FILES ${INFER_SRC_FILES})
-
-    #
-    # keyword spotting モデルを実行ファイルの隣へ配置し, パスをマクロで渡す.
-    #
-    set(KEYWORD_SPOTTING_MODEL_DST "${CMAKE_BINARY_DIR}/keyword_spotting.onnx")
-    configure_file(
-        "${CMAKE_SOURCE_DIR}/model/keyword_spotting/keyword_spotting.onnx"
-        "${KEYWORD_SPOTTING_MODEL_DST}"
-        COPYONLY)
 endif()
 
 #
@@ -122,7 +114,8 @@ if(WITH_ONNXRUNTIME)
     target_compile_definitions(SIGNAL_PROCESSING_PRACTICE_LIB
                                PUBLIC
                                SPP_WITH_ONNXRUNTIME
-                               KEYWORD_SPOTTING_MODEL_PATH="${KEYWORD_SPOTTING_MODEL_DST}")
+                               KEYWORD_SPOTTING_MODEL_PATH="${KEYWORD_SPOTTING_MODEL_BUILD}"
+                               KEYWORD_SPOTTING_MODEL_FILENAME="${KEYWORD_SPOTTING_MODEL_FILENAME}")
 endif()
 
 #

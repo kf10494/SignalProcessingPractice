@@ -156,6 +156,12 @@ jobs:
         export QMAKE="$QT_ROOT_DIR/bin/qmake6"
         export LD_LIBRARY_PATH="$QT_ROOT_DIR/lib"
 
+        # keyword spotting モデルを実行ファイルと同じ usr/bin へ同梱する
+        # (アプリは applicationDirPath()/keyword_spotting.onnx を参照する).
+        # linuxdeploy は既存 AppDir の内容を保持するため事前配置でよい.
+        mkdir -p AppDir/usr/bin
+        cp install/bin/keyword_spotting.onnx AppDir/usr/bin/
+
         linuxdeploy \
           --appdir AppDir \
           -e install/bin/SignalProcessingPracticeApp \

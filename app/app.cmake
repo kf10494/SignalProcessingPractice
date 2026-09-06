@@ -59,21 +59,37 @@ install(TARGETS SignalProcessingPracticeApp
 )
 
 #
-# ONNX Runtime の実行時ライブラリ探索設定.
-#   - Linux : ビルドツリーの ONNX Runtime を BUILD_RPATH で参照 (dev 実行用).
-#             リリース (AppImage) は linuxdeploy が DT_NEEDED を辿って同梱する.
-#   - Windows: onnxruntime.dll を実行ファイルの隣へコピーする.
+# ONNX Runtime / keyword spotting モデルの実行時配置とパッケージ同梱.
+#
+#   dev 実行:
+#     - Linux : ビルドツリーの ONNX Runtime を BUILD_RPATH で参照.
+#     - Windows: onnxruntime.dll を実行ファイルの隣へ POST_BUILD コピー.
+#   パッケージ (install ツリー = Windows zip / AppImage の元):
+#     - モデル .onnx を実行ファイルの隣へ install (app 側で実行ファイル相対に解決).
+#     - Windows: onnxruntime.dll を同梱.
+#     - Linux  : libonnxruntime.so* を隣へ install + INSTALL_RPATH=$ORIGIN.
+#                linuxdeploy が ldd から辿って AppImage へ取り込む.
 #
 if(WITH_ONNXRUNTIME)
+    install(FILES "${KEYWORD_SPOTTING_MODEL_BUILD}" DESTINATION "${CMAKE_INSTALL_BINDIR}")
+
     if(WIN32)
         add_custom_command(TARGET SignalProcessingPracticeApp POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     "${ONNXRUNTIME_SHARED_LIB}"
                     "$<TARGET_FILE_DIR:SignalProcessingPracticeApp>"
             VERBATIM)
+        install(FILES "${ONNXRUNTIME_SHARED_LIB}" DESTINATION "${CMAKE_INSTALL_BINDIR}")
     else()
         set_property(TARGET SignalProcessingPracticeApp APPEND PROPERTY
             BUILD_RPATH "${ONNXRUNTIME_LIB_DIR}")
+        set_property(TARGET SignalProcessingPracticeApp APPEND PROPERTY
+            INSTALL_RPATH "$ORIGIN")
+        install(DIRECTORY "${ONNXRUNTIME_LIB_DIR}/" DESTINATION "${CMAKE_INSTALL_BINDIR}"
+            FILES_MATCHING
+            PATTERN "libonnxruntime.so*"
+            PATTERN "cmake" EXCLUDE
+            PATTERN "pkgconfig" EXCLUDE)
     endif()
 endif()
 
