@@ -9,8 +9,27 @@
 #
 # WITH_ONNXRUNTIME=OFF のとき (組込みビルド等) は何もしない.
 #
+# NOTE: 公式プリビルドは MSVC ビルドであり, MinGW (本プロジェクトの Windows
+#       ツールチェーン) では SAL アノテーションを含むヘッダを解釈できずビルドに
+#       失敗する. そのため MinGW では既定 OFF とする. Windows で keyword spotting を
+#       有効化するには MSVC ツールチェーンへの切り替え等が必要.
+#
 
-option(WITH_ONNXRUNTIME "Enable ONNX Runtime based infer strategies" ON)
+if(MINGW)
+    set(_spp_ort_default OFF)
+else()
+    set(_spp_ort_default ON)
+endif()
+
+option(WITH_ONNXRUNTIME "Enable ONNX Runtime based infer strategies" ${_spp_ort_default})
+unset(_spp_ort_default)
+
+if(WITH_ONNXRUNTIME AND MINGW)
+    message(WARNING
+        "WITH_ONNXRUNTIME=ON with a MinGW toolchain: the official ONNX Runtime "
+        "prebuilds are MSVC-only and will not compile here. Use an MSVC toolchain "
+        "or set -DWITH_ONNXRUNTIME=OFF.")
+endif()
 
 if(NOT WITH_ONNXRUNTIME)
     return()

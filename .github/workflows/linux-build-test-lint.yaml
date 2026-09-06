@@ -74,6 +74,15 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build/app-linux --config ${{env.BUILD_TYPE}}
 
+    - name: "[build] Materialize ONNX Runtime shared library"
+      # テストバイナリは libonnxruntime.so.1 (soname) に依存する. これはシンボリック
+      # リンクのため後続の "Remove symlinks" で消える. 実体をコピーして残す.
+      run: |
+        d=build/app-linux/_deps/onnxruntime-src/lib
+        if [ -f "$d/libonnxruntime.so.1.20.1" ]; then
+          cp --remove-destination "$d/libonnxruntime.so.1.20.1" "$d/libonnxruntime.so.1"
+        fi
+
     - name: "[build] Remove symlinks under _deps"
       # _deps 配下 (FetchContent で取得したサードパーティ) に循環したシンボリック
       # リンクが生成されており, actions/upload-artifact がこれを辿ろうとして
