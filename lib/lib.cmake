@@ -1,5 +1,8 @@
+include(FetchContent)
+
 #
 # ユニットテスト用の CMake スクリプトをインクルード.
+# (WITH_ONNXRUNTIME はルート CMakeLists.txt の cmake/onnxruntime.cmake で定義済み.)
 #
 # TODO: ユニットテストを, 設定で OFF を切り替えられるようにする.
 #
@@ -18,8 +21,6 @@ file(GLOB SRC_FILES
     ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/acquire/*.hpp
     ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/fft/*.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/fft/*.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/infer/*.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/infer/*.hpp
     ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/overlap/*.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/overlap/*.hpp
     ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/overlap_add/*.cpp
@@ -53,8 +54,6 @@ if(BUILD_APP)
     list(APPEND SRC_FILES ${QT_SRC_FILES})
 endif()
 
-include(FetchContent)
-
 #
 # ETL のインクルード
 #
@@ -87,16 +86,44 @@ set_target_properties(CMSISDSP PROPERTIES
     INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${CMSIS_DSP_INCLUDES}")
 
 #
+# ONNX 依存の infer strategy とモデルファイルをビルド対象へ追加する.
+#
+if(WITH_ONNXRUNTIME)
+    file(GLOB INFER_SRC_FILES
+        ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/infer/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/platform/common/infer/*.hpp
+        )
+    list(APPEND SRC_FILES ${INFER_SRC_FILES})
+
+    #
+    # keyword spotting モデルを実行ファイルの隣へ配置し, パスをマクロで渡す.
+    #
+    set(KEYWORD_SPOTTING_MODEL_DST "${CMAKE_BINARY_DIR}/keyword_spotting.onnx")
+    configure_file(
+        "${CMAKE_SOURCE_DIR}/model/keyword_spotting/keyword_spotting.onnx"
+        "${KEYWORD_SPOTTING_MODEL_DST}"
+        COPYONLY)
+endif()
+
+#
 # Add a library target
 #
 add_library(SIGNAL_PROCESSING_PRACTICE_LIB
-            STATIC 
+            STATIC
             ${SRC_FILES})
 
 target_link_libraries(SIGNAL_PROCESSING_PRACTICE_LIB
                       PUBLIC
                       etl::etl
                       CMSISDSP)
+
+if(WITH_ONNXRUNTIME)
+    target_link_libraries(SIGNAL_PROCESSING_PRACTICE_LIB PUBLIC onnxruntime::onnxruntime)
+    target_compile_definitions(SIGNAL_PROCESSING_PRACTICE_LIB
+                               PUBLIC
+                               SPP_WITH_ONNXRUNTIME
+                               KEYWORD_SPOTTING_MODEL_PATH="${KEYWORD_SPOTTING_MODEL_DST}")
+endif()
 
 #
 # Qt に依存するソースを含む場合のみ, Qt をリンクし AUTOMOC (Q_OBJECT の moc 処理) を有効にする.

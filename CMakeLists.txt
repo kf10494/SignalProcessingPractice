@@ -15,6 +15,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #
+# ONNX Runtime (WITH_ONNXRUNTIME=ON のとき). app / lib いずれからも参照するため
+# サブディレクトリより先に取得する.
+#
+include(${CMAKE_SOURCE_DIR}/cmake/onnxruntime.cmake)
+
+#
 # Add subdirectories
 #
 option(BUILD_APP "Build the application target" ON)

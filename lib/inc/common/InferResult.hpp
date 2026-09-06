@@ -5,6 +5,8 @@
 
 #include <etl/variant.h>
 
+#include "common/KeywordSpottingResult.hpp"
+
 ///
 /// @brief 推論結果が存在しないことを表す型.
 ///
@@ -18,4 +20,4 @@ struct NoInferResult {};
 /// キーワード識別・声質変換など, 推論ドメインごとの結果型をここに列挙する.
 /// ヒープ確保を避けるため, 全ての alternative は trivially copyable であること.
 ///
-using InferResult = etl::variant<NoInferResult>;
+using InferResult = etl::variant<NoInferResult, KeywordSpottingResult>;
