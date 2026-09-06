@@ -93,7 +93,11 @@ inline constexpr std::array<std::string_view, 1> kPreProcessNames{"Bypass"};
 inline constexpr std::array<std::string_view, 1> kOverlapNames{"Overlapper"};
 inline constexpr std::array<std::string_view, 2> kWindowNames{"Rectangle", "Hann"};
 inline constexpr std::array<std::string_view, 2> kFftNames{"FFT", "Bypass"};
+#ifdef SPP_WITH_ONNXRUNTIME
+inline constexpr std::array<std::string_view, 2> kInferNames{"Bypass", "KeywordSpotting"};
+#else
 inline constexpr std::array<std::string_view, 1> kInferNames{"Bypass"};
+#endif
 inline constexpr std::array<std::string_view, 1> kPostProcessNames{"IFFT"};
 inline constexpr std::array<std::string_view, 2> kOverlapAddNames{"Rectangle", "Hann"};
 inline constexpr std::array<std::string_view, 2> kOutputNames{"Null", "Device"};

@@ -19,6 +19,9 @@
 #include "common/Strategies/RingBufferAcquire.hpp"
 #include "common/Strategies/RingBufferOutput.hpp"
 #include "common/Strategies/SineGenerator.hpp"
+#ifdef SPP_WITH_ONNXRUNTIME
+#include "common/Strategies/KeywordSpottingInfer.hpp"
+#endif
 #include "desktop_app/AudioInputBuffer.hpp"
 #include "desktop_app/AudioOutputBuffer.hpp"
 #include "desktop_app/Strategies/FilePlayer.hpp"
@@ -150,6 +153,14 @@ private:
     SineGenerator sine_generator_;
     HannWindow hann_window_;
     HannOverlapAdder hann_overlap_adder_;
+
+#ifdef SPP_WITH_ONNXRUNTIME
+    ///
+    /// keyword spotting 推論 Strategy (Infer 段で "KeywordSpotting" 選択時に bind).
+    ///
+    KeywordSpottingInfer keyword_infer_{
+            KeywordSpottingInfer::Params{.model_path = KEYWORD_SPOTTING_MODEL_PATH}};
+#endif
 
     ///
     /// 音声ファイル入力のデータソース (AudioAcquireStrategy として直接 bind する).

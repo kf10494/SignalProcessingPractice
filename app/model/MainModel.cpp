@@ -106,7 +106,13 @@ void MainModel::ApplyStrategySelection(PipelineStage stage, int index)
                     index == 1 ? get_default_bypass_fft_strategy() : get_default_fft_strategy());
             break;
         case PipelineStage::kInfer:
+#ifdef SPP_WITH_ONNXRUNTIME
+            process_.SetConfig(FrameSyncProcess::InferTag{},
+                               index == 1 ? FrameSyncProcess::InferStrategy{&keyword_infer_}
+                                          : get_default_bypass_infer_strategy());
+#else
             process_.SetConfig(FrameSyncProcess::InferTag{}, get_default_bypass_infer_strategy());
+#endif
             break;
         case PipelineStage::kPostProcess:
             process_.SetConfig(FrameSyncProcess::PostProcessTag{},

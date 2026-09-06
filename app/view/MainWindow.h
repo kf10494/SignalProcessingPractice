@@ -6,6 +6,7 @@
 #include <functional>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <QMainWindow>
@@ -17,6 +18,7 @@ class MainWindow;
 }
 
 class PlotWidget;
+class QLabel;
 class QTimer;
 
 ///
@@ -35,12 +37,6 @@ public:
     auto operator=(const MainWindow&) -> MainWindow& = delete;
     MainWindow(MainWindow&&) = delete;
     auto operator=(MainWindow&&) -> MainWindow& = delete;
-
-    ///
-    /// @name Presenter へ渡すウィジェットのアクセサ.
-    /// {@
-    [[nodiscard]] auto GetInferResultWidget() const -> QWidget*;
-    /// @}
 
     ///
     /// @brief パイプライン Strategy 選択変更の Observer を登録する.
@@ -138,6 +134,11 @@ public:
     /// 振幅スペクトラムを描画する (レンジ -100〜0 dB).
     ///
     void UpdateSpectrum(std::span<const float> values);
+
+    ///
+    /// 推論結果 (キーワードと確率) を表示する.
+    ///
+    void UpdateInferResult(std::string_view label, float confidence);
     /// @}
 
 private:
@@ -150,6 +151,11 @@ private:
     /// プレースホルダへの PlotWidget の埋め込み.
     ///
     void SetupPlotWidgets();
+
+    ///
+    /// 推論結果表示ラベルの埋め込み.
+    ///
+    void SetupInferResultWidget();
 
     ///
     /// 表示更新タイマーの起動.
@@ -170,6 +176,7 @@ private:
 
     PlotWidget* waveform_plot_{nullptr};
     PlotWidget* spectrum_plot_{nullptr};
+    QLabel* infer_result_label_{nullptr};
     QTimer* frame_tick_timer_{nullptr};
 
     ///

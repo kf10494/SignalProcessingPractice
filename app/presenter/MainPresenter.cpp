@@ -5,6 +5,7 @@
 #include "presenter/MainPresenter.h"
 
 #include <functional>
+#include <string_view>
 #include <utility>
 
 #include "view/MainWindow.h"
@@ -28,7 +29,14 @@ MainPresenter::MainPresenter(MainWindow* view)
               [view](std::span<const float> values) {
                   view->UpdateSpectrum(values);
               }),
-      infer_result_presenter_(view->GetInferResultWidget()),
+      infer_result_presenter_(
+              model_.get(),
+              [view](std::function<void()> observer) {
+                  view->AttachFrameTickObserver(std::move(observer));
+              },
+              [view](std::string_view label, float confidence) {
+                  view->UpdateInferResult(label, confidence);
+              }),
       pipeline_presenter_(
               model_.get(),
               PipelineViewHooks{

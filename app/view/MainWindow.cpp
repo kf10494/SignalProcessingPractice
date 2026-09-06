@@ -11,8 +11,10 @@
 #include <QComboBox>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QLabel>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QString>
 #include <QTimer>
 #include <QVBoxLayout>
 
@@ -60,6 +62,12 @@ constexpr int kSineFrequencyMin = 20;
 constexpr int kSineFrequencyMax = 20000;
 constexpr int kSineFrequencyDefault = 440;
 
+///
+/// 確率をパーセント表示にする係数と小数桁.
+///
+constexpr float kPercentScale = 100.0F;
+constexpr int kConfidenceDecimals = 1;
+
 }  // namespace
 
 MainWindow::MainWindow(QWidget* parent)
@@ -69,17 +77,13 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
     SetupPipelineComboBoxes();
     SetupPlotWidgets();
+    SetupInferResultWidget();
     SetupFrameTick();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-auto MainWindow::GetInferResultWidget() const -> QWidget*
-{
-    return ui->widgetInferResult;
 }
 
 void MainWindow::AttachPipelineObserver(PipelineSelectionObserver observer)
@@ -191,6 +195,19 @@ void MainWindow::UpdateSpectrum(std::span<const float> values)
     spectrum_plot_->SetSamples(values);
 }
 
+void MainWindow::UpdateInferResult(std::string_view label, float confidence)
+{
+    if (label.empty()) {
+        infer_result_label_->setText(QStringLiteral("—"));
+        return;
+    }
+    const QString text =
+            QStringLiteral("%1  (%2%)")
+                    .arg(QString::fromUtf8(label.data(), static_cast<qsizetype>(label.size())))
+                    .arg(confidence * kPercentScale, 0, 'f', kConfidenceDecimals);
+    infer_result_label_->setText(text);
+}
+
 void MainWindow::SetupPipelineComboBoxes()
 {
     const std::array<std::pair<PipelineStage, QComboBox*>, kPipelineStageCount> combo_boxes{{
@@ -288,6 +305,18 @@ void MainWindow::SetupPlotWidgets()
             {.min_value = kSpectrumMinDb,
              .max_value = kSpectrumMaxDb,
              .unit = QStringLiteral("dB")});
+}
+
+void MainWindow::SetupInferResultWidget()
+{
+    // 所有権は Qt の親子機構 (placeholder) へ移譲する.
+    auto label = std::make_unique<QLabel>(QStringLiteral("—"));
+    auto layout = std::make_unique<QVBoxLayout>();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(label.get());
+
+    infer_result_label_ = label.release();
+    ui->widgetInferResult->setLayout(layout.release());
 }
 
 void MainWindow::SetupFrameTick()

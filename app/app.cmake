@@ -58,6 +58,25 @@ install(TARGETS SignalProcessingPracticeApp
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+#
+# ONNX Runtime の実行時ライブラリ探索設定.
+#   - Linux : ビルドツリーの ONNX Runtime を BUILD_RPATH で参照 (dev 実行用).
+#             リリース (AppImage) は linuxdeploy が DT_NEEDED を辿って同梱する.
+#   - Windows: onnxruntime.dll を実行ファイルの隣へコピーする.
+#
+if(WITH_ONNXRUNTIME)
+    if(WIN32)
+        add_custom_command(TARGET SignalProcessingPracticeApp POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${ONNXRUNTIME_SHARED_LIB}"
+                    "$<TARGET_FILE_DIR:SignalProcessingPracticeApp>"
+            VERBATIM)
+    else()
+        set_property(TARGET SignalProcessingPracticeApp APPEND PROPERTY
+            BUILD_RPATH "${ONNXRUNTIME_LIB_DIR}")
+    endif()
+endif()
+
 if(WIN32)
     set_target_properties(SignalProcessingPracticeApp PROPERTIES
         WIN32_EXECUTABLE TRUE
